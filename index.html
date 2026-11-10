@@ -1,1 +1,46 @@
-.
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Specter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
+        <h2 class="text-2xl font-bold text-center mb-2 text-purple-400">Specter</h2>
+        <p class="text-gray-400 text-sm text-center mb-6">سيطر على خصوصية متابعينك</p>
+
+        <div class="space-y-4">
+            <div class="flex gap-4">
+                <button onclick="submitData(true)" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-lg transition">إخفاء المتابعين</button>
+                <button onclick="submitData(false)" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 rounded-lg transition">إظهار المتابعين</button>
+            </div>
+        </div>
+        <div id="status" class="mt-4 text-center text-sm font-semibold"></div>
+    </div>
+
+    <script>
+        async function submitData(hide) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<span class="text-blue-400">جاري المعالجة... يرجى الانتظار (15 ثانية)</span>';
+
+            try {
+                const response = await fetch('/api/hide-followers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ hide })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `<span class="text-green-400">${data.message}</span>`;
+                } else {
+                    statusDiv.innerHTML = `<span class="text-red-400">${data.error}</span>`;
+                }
+            } catch (err) {
+                statusDiv.innerHTML = '<span class="text-red-400">فشل الاتصال بالسيرفر</span>';
+            }
+        }
+    </script>
+</body>
+</html>
